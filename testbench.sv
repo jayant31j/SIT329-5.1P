@@ -1,54 +1,47 @@
 `timescale 1ns/1ns
 
-module tb_threebit;
+module threebitcounter_test_bench;
 
-  // Inputs
-  reg [2:0] a;
-  reg [2:0] b;
+    reg clk, rst, up_down;
+    wire [2:0] count;
 
-  // Outputs
-  wire A_greater_B;
-  wire A_equal_B;
-  wire A_smaller_B;
+    // Instantiate the counter module
+    threebit_counter counter_inst (
+        .clk(clk),
+        .rst(rst),
+        .up_down(up_down),
+        .count(count)
+    );
 
-  // Instantiate the threebit module
-  threebit dut (
-    .a(a),
-    .b(b),
-    .A_greater_B(A_greater_B),
-    .A_equal_B(A_equal_B),
-    .A_smaller_B(A_smaller_B)
-  );
+    // Clock generation
+    initial begin
+        clk = 0;
+        forever #5 clk = ~clk;
+    end
 
-  // Generate clock signal
-  reg clk = 0;
-  always #5 clk = ~clk;
+    initial begin
+        up_down = 1;
+        rst = 0;
+        #10;
+        $display("up_down - %d, count - %d, rst - %d, clk - %d", up_down, count, rst, clk);
 
-  // Stimulus
-  initial begin
-    $display("Starting simulation...");
+        // Test case: Count up
+        up_down = 1;
+        rst = 0;
+        #10; 
+        $display("up_down - %d, count - %d, rst - %d, clk - %d", up_down, count, rst, clk);
 
-    // Test cases
-    // Test case 1: a=6, b=1
-    a = 3'b110;
-    b = 3'b001;
-    #10;
-    $display("Test 1: a=%b, b=%b, A_greater_B=%b, A_equal_B=%b, A_smaller_B=%b", a, b, A_greater_B, A_equal_B, A_smaller_B);
-    
-    // Test case 2: a=2, b=3
-    a = 3'b010;
-    b = 3'b011;
-    #10;
-    $display("Test 2: a=%b, b=%b, A_greater_B=%b, A_equal_B=%b, A_smaller_B=%b", a, b, A_greater_B, A_equal_B, A_smaller_B);
-    
-    // Test case 3: a=5, b=4
-    a = 3'b101;
-    b = 3'b100;
-    #10;
-    $display("Test 3: a=%b, b=%b, A_greater_B=%b, A_equal_B=%b, A_smaller_B=%b", a, b, A_greater_B, A_equal_B, A_smaller_B);
-    
-    $display("Simulation completed.");
-    $finish;
-  end
+        // Test case: Count down
+        up_down = 0;
+        rst = 0;
+        #10;
+        $display("up_down - %d, count - %d, rst - %d, clk - %d", up_down, count, rst, clk);
+
+        // Test case: Reset
+        up_down = 1;
+        rst = 1;
+        #10; 
+        $display("up_down - %d, count - %d, rst - %d, clk - %d", up_down, count, rst, clk);
+    end
 
 endmodule
